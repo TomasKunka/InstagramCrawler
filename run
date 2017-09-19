@@ -1,0 +1,6 @@
+#!/bin/bash
+
+while read p; do
+  echo $p
+  python instagramcrawler.py -q $p -c -n 50
+done < tags.txt

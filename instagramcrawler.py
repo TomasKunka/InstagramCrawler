@@ -28,9 +28,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 HOST = 'http://www.instagram.com'
 
 # SELENIUM CSS SELECTOR
-CSS_LOAD_MORE = "a._8imhp._glz1g"
-CSS_RIGHT_ARROW = "a[class='_de018 coreSpriteRightPaginationArrow']"
-FIREFOX_FIRST_POST_PATH = "//div[contains(@class, '_8mlbc _vbtk2 _t5r8b')]"
+CSS_LOAD_MORE = "a._1cr2e._epyes"
+CSS_RIGHT_ARROW = "a[class='_3a693 coreSpriteRightPaginationArrow']"
+FIREFOX_FIRST_POST_PATH = "//div[contains(@class, '_mck9w _gvoze _f2mse')]"
 TIME_TO_CAPTION_PATH = "../../../div/ul/li/span"
 
 # FOLLOWERS/FOLLOWING RELATED
@@ -106,7 +106,8 @@ class InstagramCrawler(object):
     def crawl(self, dir_prefix, query, crawl_type, number, caption, authentication):
         print("dir_prefix: {}, query: {}, crawl_type: {}, number: {}, caption: {}, authentication: {}"
               .format(dir_prefix, query, crawl_type, number, caption, authentication))
-
+        if authentication:
+            self.login(authentication)
         if crawl_type == "photos":
             # Browse target page
             self.browse_target_page(query)
@@ -170,9 +171,9 @@ class InstagramCrawler(object):
         num_to_scroll = int((number - 12) / 12) + 1
         for _ in range(num_to_scroll):
             self._driver.execute_script(SCROLL_DOWN)
-            time.sleep(0.2)
+            time.sleep(0.5)
             self._driver.execute_script(SCROLL_UP)
-            time.sleep(0.2)
+            time.sleep(0.5)
 
     def scrape_photo_links(self, number, is_hashtag=False):
         print("Scraping photo links...")
@@ -208,6 +209,7 @@ class InstagramCrawler(object):
                     )
 
             elif number != 1:  # Click Right Arrow to move to next post
+                time.sleep(0.5)
                 url_before = self._driver.current_url
                 self._driver.find_element_by_css_selector(
                     CSS_RIGHT_ARROW).click()
@@ -294,24 +296,22 @@ class InstagramCrawler(object):
         print("Saving to directory: {}".format(dir_path))
 
         # Save Photos
-        for idx, photo_link in enumerate(self.data['photo_links'], 0):
+        for caption, photo_link in zip(self.data['captions'], self.data['photo_links']):
             sys.stdout.write("\033[F")
-            print("Downloading {} images to ".format(idx + 1))
             # Filename
             _, ext = os.path.splitext(photo_link)
-            filename = str(idx) + ext
+            filename = os.path.basename(photo_link)
+            print("Downloading {} images to ".format(filename))
             filepath = os.path.join(dir_path, filename)
             # Send image request
-            urlretrieve(photo_link, filepath)
+            if not os.path.exists(filepath):
+                urlretrieve(photo_link, filepath)
 
-        # Save Captions
-        for idx, caption in enumerate(self.data['captions'], 0):
-
-            filename = str(idx) + '.txt'
-            filepath = os.path.join(dir_path, filename)
-
-            with codecs.open(filepath, 'w', encoding='utf-8') as fout:
-                fout.write(caption + '\n')
+                # Save Captions
+                filename = filename.replace(ext, '.txt')
+                filepath = os.path.join(dir_path, filename)
+                with codecs.open(filepath, 'w', encoding='utf-8') as fout:
+                    fout.write(caption + '\n')
 
         # Save followers/following
         filename = crawl_type + '.txt'
