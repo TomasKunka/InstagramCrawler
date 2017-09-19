@@ -47,3 +47,9 @@ There are 2 packages : selenium & requests
 ```
 $ pip install -r requirements.txt
 ```
+
+### Cron
+Run cron every night at 00:00
+```
+0 0 * * * cd /Users/skunk/Work/projects/InstagramCrawler && ./run >> /Users/skunk/Downloads/tmp.log 2>&1
+```

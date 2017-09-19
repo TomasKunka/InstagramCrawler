@@ -1,6 +1,7 @@
 #!/bin/bash
+PATH=/usr/local/bin:/usr/local/sbin:~/bin:/usr/bin:/bin:/usr/sbin:/sbin
 
 while read p; do
   echo $p
-  python instagramcrawler.py -q $p -c -n 50
+      /opt/local/anaconda2/envs/web_test/bin/python instagramcrawler.py -q $p -l -n 50
 done < tags.txt

@@ -296,7 +296,7 @@ class InstagramCrawler(object):
         print("Saving to directory: {}".format(dir_path))
 
         # Save Photos
-        for caption, photo_link in zip(self.data['captions'], self.data['photo_links']):
+        for idx, photo_link in enumerate(self.data['photo_links'], 0):
             sys.stdout.write("\033[F")
             # Filename
             _, ext = os.path.splitext(photo_link)
@@ -306,12 +306,12 @@ class InstagramCrawler(object):
             # Send image request
             if not os.path.exists(filepath):
                 urlretrieve(photo_link, filepath)
-
+                #
                 # Save Captions
-                filename = filename.replace(ext, '.txt')
-                filepath = os.path.join(dir_path, filename)
-                with codecs.open(filepath, 'w', encoding='utf-8') as fout:
-                    fout.write(caption + '\n')
+                # filename = filename.replace(ext, '.txt')
+                # filepath = os.path.join(dir_path, filename)
+                # with codecs.open(filepath, 'w', encoding='utf-8') as fout:
+                #     fout.write(self.data['captions'][idx] + '\n')
 
         # Save followers/following
         filename = crawl_type + '.txt'
@@ -333,8 +333,8 @@ def main():
                         default='photos', help="Options: 'photos' | 'followers' | 'following'")
     parser.add_argument('-n', '--number', type=int, default=0,
                         help='Number of posts to download: integer')
-    parser.add_argument('-c', '--caption', action='store_true',
-                        help='Add this flag to download caption when downloading photos')
+    # parser.add_argument('-c', '--caption', action='store_true',
+    #                     help='Add this flag to download caption when downloading photos')
     parser.add_argument('-l', '--headless', action='store_true',
                         help='If set, will use PhantomJS driver to run script as headless')
     parser.add_argument('-a', '--authentication', type=str, default=None,
@@ -347,7 +347,7 @@ def main():
                   query=args.query,
                   crawl_type=args.crawl_type,
                   number=args.number,
-                  caption=args.caption,
+                  # caption=args.caption,
                   authentication=args.authentication)
 
 
