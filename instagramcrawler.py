@@ -347,7 +347,7 @@ def main():
                   query=args.query,
                   crawl_type=args.crawl_type,
                   number=args.number,
-                  # caption=args.caption,
+                  caption=False,
                   authentication=args.authentication)
 
 
